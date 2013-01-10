@@ -11,6 +11,7 @@ import android.location.LocationManager;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 
 public class LocationService extends Service{
 	
@@ -45,20 +46,25 @@ public class LocationService extends Service{
 		locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE) ;
 		locationListener = new LocationListener() {
 			@Override
-			public void onStatusChanged(String provider, int status, Bundle extras) {}
+			public synchronized void onStatusChanged(String provider, int status, Bundle extras) {}
 			@Override
-			public void onProviderEnabled(String provider) {}
+			public synchronized void onProviderEnabled(String provider) {}
 			@Override
-			public void onProviderDisabled(String provider) {}
+			public synchronized void onProviderDisabled(String provider) {}
 			@Override
-			public void onLocationChanged(Location plocation) {
+			public synchronized void onLocationChanged(Location plocation) {
 				location = plocation;
+				Log.i("matt", plocation.getProvider());
+				Log.i("matt", String.valueOf(plocation.getAccuracy()));
 				for (ILocationServiceListener listener : listeners) {
 					listener.onLocationChanged(location);
 				}
 			}
 		};
-		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+		if (locationManager.getProviders(false).contains(LocationManager.NETWORK_PROVIDER))
+			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 50, locationListener);
+		if (locationManager.getProviders(false).contains(LocationManager.GPS_PROVIDER))
+			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
 		super.onCreate();
 	}
 	

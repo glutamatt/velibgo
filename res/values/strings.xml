@@ -4,5 +4,6 @@
     <string name="app_name">Velibgo</string>
     <string name="menu_settings">Settings</string>
     <string name="locate_me">Me Localiser</string>
+    <string name="refresh">Actualiser</string>
 
 </resources>

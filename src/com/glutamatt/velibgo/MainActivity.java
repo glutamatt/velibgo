@@ -70,6 +70,7 @@ public class MainActivity extends Activity implements ILocationServiceListener {
 	}
 	
 	private void centerMapOnLocation() {
+		if(location == null) return ; // coder ici un truc pour dire qu'on attend la géoloc !
 		mMap.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder().target(new LatLng(
 				location.getLatitude(), location.getLongitude()
 		)).zoom(17).build()));

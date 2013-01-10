@@ -6,6 +6,12 @@
         android:showAsAction="ifRoom|withText"
         />
     
+    <item android:id="@+id/menu_refresh" android:titleCondensed=""
+        android:icon="@drawable/ic_action_refresh"
+        android:title="@string/refresh"
+        android:showAsAction="ifRoom|withText"
+        />
+    
     <item
         android:id="@+id/menu_settings"
         android:orderInCategory="100"

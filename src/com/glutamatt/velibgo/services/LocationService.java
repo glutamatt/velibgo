@@ -11,7 +11,6 @@ import android.location.LocationManager;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 
 public class LocationService extends Service{
 	
@@ -54,8 +53,6 @@ public class LocationService extends Service{
 			@Override
 			public synchronized void onLocationChanged(Location plocation) {
 				location = plocation;
-				Log.i("matt", plocation.getProvider());
-				Log.i("matt", String.valueOf(plocation.getAccuracy()));
 				for (ILocationServiceListener listener : listeners) {
 					listener.onLocationChanged(location);
 				}

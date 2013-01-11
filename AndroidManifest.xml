@@ -17,6 +17,8 @@
 	<uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	
     <permission
           android:name="com.glutamatt.velibgo.permission.MAPS_RECEIVE"
           android:protectionLevel="signature"/>
@@ -27,6 +29,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name" >
         <service android:name="com.glutamatt.velibgo.services.LocationService" />
+        <service android:name="com.glutamatt.velibgo.services.SyncService" />
         <activity
             android:name="com.glutamatt.velibgo.MainActivity"
             android:label="@string/app_name">

@@ -1,9 +1,9 @@
-package providers;
+package com.glutamatt.velibgo.providers;
 
 import java.util.List;
-import providers.json.JsonStationsParser;
 import com.glutamatt.velibgo.io.Network;
-import models.Station;
+import com.glutamatt.velibgo.models.Station;
+import com.glutamatt.velibgo.providers.json.JsonStationsParser;
 public class StationsProvider {
 	
 	private Network network;

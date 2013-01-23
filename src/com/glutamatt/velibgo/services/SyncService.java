@@ -3,10 +3,10 @@ package com.glutamatt.velibgo.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import models.Station;
-import providers.StationsProvider;
 
 import com.glutamatt.velibgo.io.Network;
+import com.glutamatt.velibgo.models.Station;
+import com.glutamatt.velibgo.providers.StationsProvider;
 import com.glutamatt.velibgo.storage.DaoStation;
 import com.glutamatt.velibgo.storage.DatabaseOpenHelper;
 

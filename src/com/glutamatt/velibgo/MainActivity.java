@@ -3,8 +3,8 @@ package com.glutamatt.velibgo;
 import java.util.List;
 
 
-import models.Station;
 
+import com.glutamatt.velibgo.models.Station;
 import com.glutamatt.velibgo.services.LocationService;
 import com.glutamatt.velibgo.services.SyncService;
 import com.glutamatt.velibgo.services.LocationService.ILocationServiceListener;

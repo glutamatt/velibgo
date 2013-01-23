@@ -1,12 +1,12 @@
 package com.glutamatt.velibgo.ui;
 
 import com.glutamatt.velibgo.R;
+import com.glutamatt.velibgo.models.Station;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import models.Station;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

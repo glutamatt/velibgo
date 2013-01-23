@@ -3,12 +3,13 @@ package com.glutamatt.velibgo.storage;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.glutamatt.velibgo.models.Station;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import models.Station;
 
 public class DaoStation extends AbstractDao implements IDaoDb<Station>{
 	

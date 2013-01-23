@@ -1,4 +1,4 @@
-package models;
+package com.glutamatt.velibgo.models;
 
 public class Station {
 	private int id;

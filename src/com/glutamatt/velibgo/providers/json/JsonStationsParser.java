@@ -1,10 +1,11 @@
-package providers.json;
+package com.glutamatt.velibgo.providers.json;
 
 import java.util.ArrayList;
 import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import models.Station;
+
+import com.glutamatt.velibgo.models.Station;
 
 public class JsonStationsParser {
 	

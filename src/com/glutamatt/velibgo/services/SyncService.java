@@ -66,6 +66,7 @@ public class SyncService extends Service{
 
 			@Override
 			protected void onPostExecute(List<Station> stations) {
+				if(stations == null) return ;
 				for (ISyncServerListener listener : listeners) {
 					listener.onStationsUpdated(stations);
 				}

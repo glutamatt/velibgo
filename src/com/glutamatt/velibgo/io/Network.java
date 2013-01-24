@@ -63,6 +63,7 @@ public class Network {
 	}
 	
 	public String readIt(InputStream is) throws IOException {
+		if(is == null) return null;
 		BufferedReader r = new BufferedReader(new InputStreamReader(is));
 		StringBuilder total = new StringBuilder();
 		String line;

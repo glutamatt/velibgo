@@ -1,37 +1,35 @@
 package com.glutamatt.velibgo.ui;
 
+import java.util.List;
+
 import com.glutamatt.velibgo.R;
 import com.glutamatt.velibgo.models.Station;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.AsyncTask;
+import android.util.SparseArray;
 
-public class StationMarker {
+public class StationMarkerManager {
 	
-	Station station;
-	private Context context;
+	private static SparseArray<Marker> markers = new SparseArray<Marker>();
 	
-	public StationMarker(Station pstation, Context pcontext) {
-		station = pstation;
-		context = pcontext;
-	}
-	
-	public void displayOnMap(final GoogleMap map)
+	public static void displayStationOnMap(final Station station, final GoogleMap map, final Resources res)
 	{
 		class ImageDecodeur extends AsyncTask<Void, Void, Bitmap>
 		{
 			@Override
 			protected Bitmap doInBackground(Void... params) {
-				Bitmap baseBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.marker_station);
+				Bitmap baseBitmap = BitmapFactory.decodeResource(res, R.drawable.marker_station);
 				Bitmap bitmap = Bitmap.createBitmap(baseBitmap.getWidth(), baseBitmap.getHeight(), Bitmap.Config.ARGB_8888);
 				Canvas canvas = new Canvas(bitmap);
 				canvas.drawBitmap(baseBitmap, 0, 0, null);
@@ -46,14 +44,27 @@ public class StationMarker {
 			
 			@Override
 			protected void onPostExecute(Bitmap bitmap) {
-				map.addMarker(new MarkerOptions()
-		        	.position(new LatLng(station.getLatitude(), station.getLongitude()))
-		        	.icon(BitmapDescriptorFactory.fromBitmap(bitmap))
-		        );
+				
+				if (markers.get(station.getId()) != null)
+					markers.get(station.getId()).remove();
+				
+				markers.put(station.getId(), map.addMarker(new MarkerOptions()
+						.position(
+								new LatLng(station.getLatitude(), station
+										.getLongitude())).icon(
+								BitmapDescriptorFactory.fromBitmap(bitmap))));
 			}
 			
 		}
 		new ImageDecodeur().execute();
+	}
+
+	public static void refreshMarkers(List<Station> stations, GoogleMap map, Resources res) {
+		for(Station station : stations)
+		{
+			if(markers.get(station.getId()) != null)
+				displayStationOnMap(station, map, res);
+		}
 	}
 
 }

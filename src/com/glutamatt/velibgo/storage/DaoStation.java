@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.glutamatt.velibgo.models.Station;
+import com.google.android.gms.maps.model.LatLng;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.Location;
+import android.util.SparseArray;
 
 
 public class DaoStation extends AbstractDao implements IDaoDb<Station>{
@@ -40,6 +43,8 @@ public class DaoStation extends AbstractDao implements IDaoDb<Station>{
 			KEY_PLACES_TOTAL,
 			KEY_PLACES_LOCKED 
 		};
+
+	private SparseArray<Station> stations = new SparseArray<Station>();
 
 	private DaoStation(Context context) {
 		super(context);
@@ -73,6 +78,7 @@ public class DaoStation extends AbstractDao implements IDaoDb<Station>{
 
 	@Override
 	public void save(Station model) {
+		stations.put(model.getId(), model);
 		SQLiteDatabase db = getHelper().getWritableDatabase();
 		ContentValues values = new ContentValues();
 		values.put(KEY_ID, model.getId());
@@ -92,17 +98,52 @@ public class DaoStation extends AbstractDao implements IDaoDb<Station>{
 
 	@Override
 	public List<Station> getAll() {
-		List<Station> stations = new ArrayList<Station>();
+		if(stations.size() < 1)
+			loadAllFromSql();
+		return stationsToList();
+	}
+	
+	private List<Station> stationsToList() {
+		ArrayList<Station> list = new ArrayList<Station>();
+		int key = 0;
+		for(int i = 0; i < stations.size(); i++) {
+		   key = stations.keyAt(i);
+		   list.add(stations.get(key));
+		}
+		return list;
+	}
+
+	protected void loadAllFromSql()
+	{
 		SQLiteDatabase db = getHelper().getReadableDatabase();
 		Cursor cursor = db.query(TABLE_NAME, fieldsString, null, null, null, null, null);	
 		if(cursor.moveToFirst())
 		{
+			Station station;
 			do {
-				stations.add(cursorToStation(cursor));
+				station = cursorToStation(cursor);
+				stations.put(station.getId(), station);
 			} while (cursor.moveToNext());
 		}
 		cursor.close();
-		return stations;
+	}
+	
+	public List<Station> getByCoordonnees(LatLng center, float radius)
+	{
+		List<Station> all = getAll();
+		ArrayList<Station> filtered = new ArrayList<Station>();
+		float[] distances;
+		for(Station station: all)
+		{
+			distances = new float[3];
+			Location.distanceBetween(
+					center.latitude, center.longitude,
+					station.getLatitude(), station.getLongitude(),
+					distances);
+			if(distances[0] <= radius)
+				filtered.add(station);
+		}
+		return filtered;
 	}
 	
 	private Station cursorToStation(Cursor cursor) {

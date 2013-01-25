@@ -15,24 +15,57 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.util.SparseArray;
 
 public class StationMarkerManager {
 	
+	private static final float[] TRANSFORM_ALMOST_FULL = {
+        2f, 0, 0, 0, 0,
+        0, 1f, 0, 0, 0,
+        0, 0, 1f, 0, 0,
+        0, 0, 0, 1f, 0};
+	private static final float[] TRANSFORM_TOTAL_FULL = {
+		4f, 0, 0, 0, 0,
+		0, 1f, 0, 0, 0,
+		0, 0, 1f, 0, 0,
+		0, 0, 0, 1f, 0};
+	private static final float[] TRANSFORM_ALMOST_EMPTY = {
+        1.1f, 0, 0, 0, 0,
+        0, 1.3f, 0, 0, 0,
+        0, 0, 1.3f, 0, 0,
+        0, 0, 0, 1f, 0};
+	private static final float[] TRANSFORM_TOTAL_EMPTY = {
+        1.5f, 0, 0, 0, 0,
+        0, 2f, 0, 0, 0,
+        0, 0, 2f, 0, 0,
+        0, 0, 0, 1f, 0};
+	
 	private static SparseArray<Marker> markers = new SparseArray<Marker>();
+	
+	
+	public static Bitmap baseMarkerBitmap;
 	
 	public static void displayStationOnMap(final Station station, final GoogleMap map, final Resources res)
 	{
-		class ImageDecodeur extends AsyncTask<Void, Void, Bitmap>
+		class ImageDecodeur extends AsyncTask<Bitmap, Void, Bitmap>
 		{
+			private Bitmap baseBitmap;
+
 			@Override
-			protected Bitmap doInBackground(Void... params) {
-				Bitmap baseBitmap = BitmapFactory.decodeResource(res, R.drawable.marker_station);
+			protected Bitmap doInBackground(Bitmap... params) {
+				if(params[0] == null) {
+					baseBitmap = BitmapFactory.decodeResource(res, R.drawable.marker_station);
+				}
+				else {
+					baseBitmap = params[0];
+				}
 				Bitmap bitmap = Bitmap.createBitmap(baseBitmap.getWidth(), baseBitmap.getHeight(), Bitmap.Config.ARGB_8888);
 				Canvas canvas = new Canvas(bitmap);
-				canvas.drawBitmap(baseBitmap, 0, 0, null);
+				canvas.drawBitmap(baseBitmap, 0, 0, getPaintToColor(station));
 				Paint paint = new Paint();
 				paint.setTextSize(20);
 				paint.setColor(Color.BLACK);
@@ -42,9 +75,34 @@ public class StationMarkerManager {
 				return bitmap;
 			}
 			
+			private Paint getPaintToColor(Station station) {
+				float[] colorTransform = null;
+				
+				if(station.getPlacesDispo() < 3)
+					colorTransform = TRANSFORM_ALMOST_FULL;
+				if(station.getVelosDispo() < 3)
+					colorTransform = TRANSFORM_ALMOST_EMPTY;
+				if(station.getVelosDispo() == 0)
+					colorTransform = TRANSFORM_TOTAL_EMPTY;
+				if(station.getPlacesDispo() == 0)
+					colorTransform = TRANSFORM_TOTAL_FULL;
+				
+				if(colorTransform == null)
+					return null;
+
+			    ColorMatrix colorMatrix = new ColorMatrix();
+			    colorMatrix.setSaturation(0.5f);
+			    colorMatrix.set(colorTransform);
+
+			    ColorMatrixColorFilter colorFilter = new ColorMatrixColorFilter(colorMatrix);
+			    Paint paint = new Paint();
+			    paint.setColorFilter(colorFilter);
+				return paint;
+			}
+
 			@Override
 			protected void onPostExecute(Bitmap bitmap) {
-				
+				setBaseMarkerBmp(baseBitmap);
 				if (markers.get(station.getId()) != null)
 					markers.get(station.getId()).remove();
 				
@@ -56,7 +114,12 @@ public class StationMarkerManager {
 			}
 			
 		}
-		new ImageDecodeur().execute();
+		new ImageDecodeur().execute(baseMarkerBitmap);
+	}
+	
+	public static void setBaseMarkerBmp(Bitmap bmp)
+	{
+		baseMarkerBitmap = bmp;
 	}
 
 	public static void refreshMarkers(List<Station> stations, GoogleMap map, Resources res) {
@@ -67,4 +130,10 @@ public class StationMarkerManager {
 		}
 	}
 
+	public static void clearMarkers() {
+		for(int i = 0; i < markers.size(); i++) {
+			markers.get(markers.keyAt(i)).remove();
+		}
+		markers.clear();
+	}
 }

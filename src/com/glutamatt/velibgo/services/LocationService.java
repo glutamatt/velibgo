@@ -38,9 +38,26 @@ public class LocationService extends Service{
 	private LocationListener locationListener;
 	private Location location;
 
+
+	@Override
+	public boolean onUnbind(Intent intent) {
+		locationManager.removeUpdates(locationListener);
+		return super.onUnbind(intent);
+	}
+	
+	@Override
+	public void onRebind(Intent intent) {
+		startLocationListening();
+		super.onRebind(intent);
+	}
 	
 	@Override
 	public void onCreate() {
+		startLocationListening();
+		super.onCreate();
+	}
+	
+	private void startLocationListening() {
 		listeners = new ArrayList<ILocationServiceListener>();
 		locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE) ;
 		locationListener = new LocationListener() {
@@ -58,13 +75,21 @@ public class LocationService extends Service{
 				}
 			}
 		};
+		Location lastKnownLocation = null;
 		if (locationManager.getProviders(false).contains(LocationManager.NETWORK_PROVIDER))
+		{
+			lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 50, locationListener);
+		}
 		if (locationManager.getProviders(false).contains(LocationManager.GPS_PROVIDER))
+		{
+			lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
-		super.onCreate();
+		}
+		if(lastKnownLocation != null)
+			locationListener.onLocationChanged(lastKnownLocation);
 	}
-	
+
 	public void addListener(ILocationServiceListener listener)
 	{
 		listeners.add(listener);

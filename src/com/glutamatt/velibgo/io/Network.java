@@ -57,7 +57,6 @@ public class Network {
 			conn.connect();
 			is  = conn.getInputStream();
 		} catch (IOException e) {
-			e.printStackTrace();
 		}
 		return is;
 	}

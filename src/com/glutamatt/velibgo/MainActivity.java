@@ -64,13 +64,16 @@ public class MainActivity extends Activity implements ILocationServiceListener, 
 	};
 	
 	SyncService syncService;
+	boolean mSyncServiceBound = false;
 	private ServiceConnection mSyncServiceConnection = new ServiceConnection() {
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
+			mSyncServiceBound = false;
 		}
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			syncService = ((SyncBinder) service).getService();
+			mSyncServiceBound = true;
 			syncService.addListener(MainActivity.this);
 			refreshData();
 		}
@@ -81,14 +84,18 @@ public class MainActivity extends Activity implements ILocationServiceListener, 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+		mMap.setOnMapClickListener(this);
+	}
+	
+	@Override
+	protected void onResume() {
 		Intent locationServiceIntent = new Intent(this, LocationService.class);
 		bindService(locationServiceIntent, mLocationServiceConnection, BIND_AUTO_CREATE);
 		
 		Intent syncServiceIntent = new Intent(this, SyncService.class);
 		bindService(syncServiceIntent, mSyncServiceConnection, BIND_AUTO_CREATE);
-		
-		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
-		mMap.setOnMapClickListener(this);
+		super.onResume();
 	}
 	
 	
@@ -111,6 +118,7 @@ public class MainActivity extends Activity implements ILocationServiceListener, 
 		mMap.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder().target(new LatLng(
 				location.getLatitude(), location.getLongitude()
 		)).zoom(16).build()), 800, null);
+		onMapClick(new LatLng(location.getLatitude(), location.getLongitude()));
 	}
 	
 	@Override
@@ -121,6 +129,9 @@ public class MainActivity extends Activity implements ILocationServiceListener, 
 			break;
 		case R.id.menu_refresh:
 			refreshData();
+			break;
+		case R.id.menu_clear:
+			StationMarkerManager.clearMarkers();
 		default:break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -214,6 +225,16 @@ public class MainActivity extends Activity implements ILocationServiceListener, 
 		}
 		CirclesOnMapDrawer.draw(mMap, clickPos, SEARCH_SIGHT, getResources());
 		new ShowNearByStationsTask().execute(clickPos);
+	}
+	
+	@Override
+	protected void onPause() {
+		if(mLocationServiceBound)
+		{
+			mLocationServiceBound = false;
+			unbindService(mLocationServiceConnection);
+		}
+		super.onPause();
 	}
 
 }

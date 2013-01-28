@@ -105,12 +105,14 @@ public class StationMarkerManager {
 				setBaseMarkerBmp(baseBitmap);
 				if (markers.get(station.getId()) != null)
 					markers.get(station.getId()).remove();
-				
-				markers.put(station.getId(), map.addMarker(new MarkerOptions()
+				Marker marker = map.addMarker(new MarkerOptions()
 						.position(
 								new LatLng(station.getLatitude(), station
 										.getLongitude())).icon(
-								BitmapDescriptorFactory.fromBitmap(bitmap))));
+								BitmapDescriptorFactory.fromBitmap(bitmap))) ;
+				markers.put(station.getId(), marker);
+				marker.setTitle(station.getNom());
+				marker.setSnippet("vélos : " + station.getVelosDispo() + " - places : " + station.getPlacesDispo());
 			}
 			
 		}

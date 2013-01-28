@@ -44,7 +44,6 @@ public class MainActivity extends Activity implements ILocationServiceListener, 
 	
 	public static final int SEARCH_SIGHT = 500;
 	GoogleMap mMap;
-	Location location;
 	Marker locationMarker;
 	
 	boolean mLocationServiceBound = false;
@@ -75,7 +74,6 @@ public class MainActivity extends Activity implements ILocationServiceListener, 
 			syncService = ((SyncBinder) service).getService();
 			mSyncServiceBound = true;
 			syncService.addListener(MainActivity.this);
-			refreshData();
 		}
 	};
 	
@@ -113,22 +111,17 @@ public class MainActivity extends Activity implements ILocationServiceListener, 
 		return true;
 	}
 	
-	private void centerMapOnLocation() {
-		if(location == null) return ; // coder ici un truc pour dire qu'on attend la géoloc !
-		mMap.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder().target(new LatLng(
-				location.getLatitude(), location.getLongitude()
-		)).zoom(16).build()), 800, null);
-		onMapClick(new LatLng(location.getLatitude(), location.getLongitude()));
-	}
-	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+		case R.id.menu_display_markers:
+			onMapClick(mMap.getCameraPosition().target);
+			break;
 		case R.id.menu_locate_me:
 			centerMapOnLocation();
 			break;
 		case R.id.menu_refresh:
-			refreshData();
+			syncService.pullFreshData();
 			break;
 		case R.id.menu_clear:
 			StationMarkerManager.clearMarkers();
@@ -136,14 +129,22 @@ public class MainActivity extends Activity implements ILocationServiceListener, 
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
-	private void refreshData() {
-		syncService.pullFreshData();
+	
+	private void centerMapOnLocation() {
+		if(locationMarker == null) {
+			Toast.makeText(getApplicationContext(), "Position non disponible", Toast.LENGTH_SHORT).show();
+			return ;
+		}
+		LatLng location = locationMarker.getPosition();
+		mMap.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder().target(new LatLng(
+				location.latitude, location.longitude
+				)).zoom(16).build()), 800, null);
+		onMapClick(location);
 	}
 
 	@Override
 	public void onLocationChanged(Location l) {
-		location = l;
+		Location location = l;
 		LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
 		if(locationMarker == null)
 		{
@@ -199,10 +200,6 @@ public class MainActivity extends Activity implements ILocationServiceListener, 
 		StationMarkerManager.refreshMarkers(stations,mMap, getResources());
 	}
 
-	private void drawStationOnMap(Station station, GoogleMap map) {
-		StationMarkerManager.displayStationOnMap(station, mMap, getResources());
-	}
-
 	@Override
 	public void onUpdateStart() {
 		Toast.makeText(MainActivity.this, "Récupération des données", Toast.LENGTH_SHORT).show();
@@ -220,7 +217,7 @@ public class MainActivity extends Activity implements ILocationServiceListener, 
 			@Override
 			protected void onPostExecute(List<Station> result) {
 				for(Station station: result)
-					drawStationOnMap(station, mMap);
+					StationMarkerManager.displayStationOnMap(station, mMap, getResources());
 			}
 		}
 		CirclesOnMapDrawer.draw(mMap, clickPos, SEARCH_SIGHT, getResources());

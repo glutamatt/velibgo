@@ -13,7 +13,7 @@ public abstract class AbstractDao {
 	abstract public String getCreateSql();
 	abstract public String getUpgradeSql();
 	
-	public DatabaseOpenHelper getHelper()
+	protected DatabaseOpenHelper getHelper()
 	{
 		if(null == helper) helper = DatabaseOpenHelper.getInstance(context);
 		return helper;

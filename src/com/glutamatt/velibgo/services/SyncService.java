@@ -47,6 +47,7 @@ public class SyncService extends Service{
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		pullFreshData();
 	}
 
 	public void pullFreshData() {

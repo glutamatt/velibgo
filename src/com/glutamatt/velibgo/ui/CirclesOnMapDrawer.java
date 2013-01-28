@@ -7,8 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.os.AsyncTask;
-import android.util.Log;
+import android.os.AsyncTask;	
 import android.view.animation.AccelerateInterpolator;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -21,7 +20,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class CirclesOnMapDrawer {
 	
-	public static BitmapDescriptor circleBmp;
+	private static BitmapDescriptor circleBmp;
 
 	public static void draw(final GoogleMap mapView, final LatLng latLng, final int radiusM, final Resources res)
 	{
@@ -52,7 +51,7 @@ public class CirclesOnMapDrawer {
 			displayBmpToCircleInMap(circleBmp, latLng, radiusM, mapView);
 	}
 	
-	public static void displayBmpToCircleInMap(BitmapDescriptor bmp, LatLng latLng, int radiusM, GoogleMap mapView) {
+	private static void displayBmpToCircleInMap(BitmapDescriptor bmp, LatLng latLng, int radiusM, GoogleMap mapView) {
 		GroundOverlayOptions options = new GroundOverlayOptions().
 	            image(bmp).
 	            position(latLng,radiusM*2,radiusM*2).
@@ -71,7 +70,6 @@ public class CirclesOnMapDrawer {
 				Float value = (Float) animation.getAnimatedValue();
 				if(value == 1 ) circle.remove();
 				circle.setTransparency(value);
-				Log.v("MAT" , "fadeout circle");
 			}
 		});
 		animation.start();

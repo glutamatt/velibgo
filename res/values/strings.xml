@@ -5,6 +5,7 @@
     <string name="menu_settings">Settings</string>
     <string name="locate_me">Me Localiser</string>
     <string name="refresh">Actualiser</string>
-    <string name="clear_map">Nettoyer</string>
+    <string name="clear_map">Cacher les stations</string>
+    <string name="display_markers">Afficher les stations</string>
 
 </resources>

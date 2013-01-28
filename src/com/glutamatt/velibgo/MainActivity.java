@@ -88,6 +88,18 @@ public class MainActivity extends Activity implements ILocationServiceListener, 
 	
 	@Override
 	protected void onResume() {
+		class LoadInit extends AsyncTask<Void, Void, List<Station>>{
+			@Override
+			protected List<Station> doInBackground(Void... params) {
+				return DaoStation.getInstance(getApplicationContext()).getAll();
+			}
+			@Override
+			protected void onPostExecute(List<Station> result) {
+				onStationsUpdated(result);
+			}
+		}
+		new LoadInit().execute();
+		
 		Intent locationServiceIntent = new Intent(this, LocationService.class);
 		bindService(locationServiceIntent, mLocationServiceConnection, BIND_AUTO_CREATE);
 		
@@ -95,7 +107,6 @@ public class MainActivity extends Activity implements ILocationServiceListener, 
 		bindService(syncServiceIntent, mSyncServiceConnection, BIND_AUTO_CREATE);
 		super.onResume();
 	}
-	
 	
 	@Override
 	protected void onStop() {
@@ -196,7 +207,6 @@ public class MainActivity extends Activity implements ILocationServiceListener, 
 
 	@Override
 	public void onStationsUpdated(List<Station> stations) {
-		Toast.makeText(MainActivity.this, String.valueOf(stations.size()) + " stations mises à jour", Toast.LENGTH_SHORT).show();
 		StationMarkerManager.refreshMarkers(stations,mMap, getResources());
 	}
 
@@ -230,6 +240,12 @@ public class MainActivity extends Activity implements ILocationServiceListener, 
 		{
 			mLocationServiceBound = false;
 			unbindService(mLocationServiceConnection);
+		}
+		
+		if(mSyncServiceBound)
+		{
+			unbindService(mSyncServiceConnection);
+			mSyncServiceBound = false;
 		}
 		super.onPause();
 	}

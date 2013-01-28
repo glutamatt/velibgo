@@ -92,7 +92,8 @@ public class LocationService extends Service{
 
 	public void addListener(ILocationServiceListener listener)
 	{
-		listeners.add(listener);
+		if(!listeners.contains(listener))
+			listeners.add(listener);
 	}
 
 }

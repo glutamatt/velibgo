@@ -1,6 +1,12 @@
 package com.glutamatt.velibgo.models;
 
 public class Station {
+	
+	@Override
+	public String toString() {
+		return getNom();
+	}
+	
 	private int id;
 	private String adresse;
 	private String nom;

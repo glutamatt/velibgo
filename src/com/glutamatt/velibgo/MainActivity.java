@@ -14,6 +14,7 @@ import com.glutamatt.velibgo.ui.CirclesOnMapDrawer;
 import com.glutamatt.velibgo.ui.StationMarkerManager;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.Projection;
@@ -84,6 +85,15 @@ public class MainActivity extends Activity implements ILocationServiceListener, 
 		
 		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
 		mMap.setOnMapClickListener(this);
+		mMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
+			@Override
+			public void onInfoWindowClick(Marker clickedWindowMarker) {
+				Intent intent = new Intent(MainActivity.this, StationsListActivity.class);
+				intent.putExtra(StationsListActivity.EXTRA_FIRST_STATION_ID,
+						StationMarkerManager.getMarkerStationId(clickedWindowMarker));
+				startActivity(intent);
+			}
+		});
 	}
 	
 	@Override
@@ -126,7 +136,7 @@ public class MainActivity extends Activity implements ILocationServiceListener, 
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_display_markers:
-			onMapClick(mMap.getCameraPosition().target);
+			displayStationsByLocation(mMap.getCameraPosition().target, true);
 			break;
 		case R.id.menu_locate_me:
 			centerMapOnLocation();
@@ -150,7 +160,7 @@ public class MainActivity extends Activity implements ILocationServiceListener, 
 		mMap.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder().target(new LatLng(
 				location.latitude, location.longitude
 				)).zoom(16).build()), 800, null);
-		onMapClick(location);
+		displayStationsByLocation(location, false);
 	}
 
 	@Override
@@ -215,9 +225,13 @@ public class MainActivity extends Activity implements ILocationServiceListener, 
 		Toast.makeText(MainActivity.this, "Récupération des données", Toast.LENGTH_SHORT).show();
 	}
 
-
 	@Override
 	public void onMapClick(LatLng clickPos) {
+		displayStationsByLocation(clickPos, true);
+	}
+	
+	private void displayStationsByLocation(LatLng pos, boolean drawCircle)
+	{
 		class ShowNearByStationsTask extends AsyncTask<LatLng, Void, List<Station>>
 		{
 			@Override
@@ -230,8 +244,9 @@ public class MainActivity extends Activity implements ILocationServiceListener, 
 					StationMarkerManager.displayStationOnMap(station, mMap, getResources());
 			}
 		}
-		CirclesOnMapDrawer.draw(mMap, clickPos, SEARCH_SIGHT, getResources());
-		new ShowNearByStationsTask().execute(clickPos);
+		if(drawCircle)
+			CirclesOnMapDrawer.draw(mMap, pos, SEARCH_SIGHT, getResources());
+		new ShowNearByStationsTask().execute(pos);
 	}
 	
 	@Override

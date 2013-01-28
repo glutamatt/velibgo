@@ -1,7 +1,6 @@
 package com.glutamatt.velibgo.ui;
 
 import java.util.List;
-
 import com.glutamatt.velibgo.R;
 import com.glutamatt.velibgo.models.Station;
 import com.google.android.gms.maps.GoogleMap;
@@ -46,8 +45,7 @@ public class StationMarkerManager {
 	
 	private static SparseArray<Marker> markers = new SparseArray<Marker>();
 	
-	
-	public static Bitmap baseMarkerBitmap;
+	private static Bitmap baseMarkerBitmap;
 	
 	public static void displayStationOnMap(final Station station, final GoogleMap map, final Resources res)
 	{
@@ -119,7 +117,7 @@ public class StationMarkerManager {
 		new ImageDecodeur().execute(baseMarkerBitmap);
 	}
 	
-	public static void setBaseMarkerBmp(Bitmap bmp)
+	private static void setBaseMarkerBmp(Bitmap bmp)
 	{
 		baseMarkerBitmap = bmp;
 	}
@@ -137,5 +135,13 @@ public class StationMarkerManager {
 			markers.get(markers.keyAt(i)).remove();
 		}
 		markers.clear();
+	}
+
+	public static int getMarkerStationId(Marker arg0) {
+		for(int i = 0; i < markers.size(); i++) {
+			if(markers.get(markers.keyAt(i)).getId().equals(arg0.getId()))
+				return markers.keyAt(i);
+		}
+		return 0;
 	}
 }

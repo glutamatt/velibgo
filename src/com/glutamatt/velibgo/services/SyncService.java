@@ -50,7 +50,10 @@ public class SyncService extends Service{
 		pullFreshData();
 	}
 
+	private static boolean pulling;
 	public void pullFreshData() {
+		if(pulling) return;
+		pulling = true ;
 		class Refresh extends AsyncTask<Void, Void, List<Station>>
 		{
 			@Override
@@ -73,6 +76,7 @@ public class SyncService extends Service{
 				}
 				persistStations(stations);
 				super.onPostExecute(stations);
+				pulling = false ;
 			}
 		}
 		for (ISyncServerListener listener : listeners) {
@@ -81,18 +85,25 @@ public class SyncService extends Service{
 		new Refresh().execute();
 	}
 	
+	AsyncTask<Station, Void, Station> persistTask;
 	private void persistStations(final List<Station> stations) {
-		class PersistStations extends AsyncTask<Void, Void, Void>
+		class PersistStation extends AsyncTask<Station, Void, Station>
 		{
 			@Override
-			protected Void doInBackground(Void... params) {
-				DaoStation dao = DaoStation.getInstance(getApplicationContext());
-				for(Station station : stations)
-					dao.save(station);
-				return null;
+			protected Station doInBackground(Station... params) {
+				DaoStation.getInstance(getApplicationContext()).save(params[0]);
+				return params[0];
+			}
+			 @Override
+			protected void onPostExecute(Station result) {
+				 int i = stations.indexOf(result);
+				 if(++i < stations.size())
+					 persistTask = new PersistStation().execute(stations.get(i));
 			}
 		}
-		new PersistStations().execute();
+		if(persistTask != null)
+			persistTask.cancel(true);
+		persistTask = new PersistStation().execute(stations.get(0));
 	}
 	
 	@Override

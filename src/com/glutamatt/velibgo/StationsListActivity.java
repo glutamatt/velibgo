@@ -8,6 +8,8 @@ import com.glutamatt.velibgo.storage.DaoStation;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.app.ActionBar;
+import android.app.ActionBar.OnNavigationListener;
 import android.content.Context;
 import android.content.Intent;
 import android.view.Menu;
@@ -16,9 +18,10 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
-public class StationsListActivity extends BaseActivity {
+public class StationsListActivity extends BaseActivity implements OnNavigationListener {
 
 	protected static final String EXTRA_FIRST_STATION_ID = null;
 	private ListView list;
@@ -37,6 +40,15 @@ public class StationsListActivity extends BaseActivity {
 				StationsListActivity.this.startActivity(intent);
 			}
 		});
+		
+		ActionBar actionBar = getActionBar();
+		SpinnerAdapter mSpinnerAdapter = ArrayAdapter.createFromResource(
+				StationsListActivity.this,
+				R.array.action_stations_list,
+				android.R.layout.simple_spinner_dropdown_item);
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		actionBar.setListNavigationCallbacks(mSpinnerAdapter, this);
+		
 		loadStations();
 	}
 	
@@ -102,5 +114,11 @@ public class StationsListActivity extends BaseActivity {
 	public void onStationsUpdated(List<Station> stations) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

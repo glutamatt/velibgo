@@ -11,7 +11,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -21,14 +20,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.SystemClock;
 import android.content.Intent;
-import android.graphics.Point;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.animation.Interpolator;
-import android.view.animation.LinearInterpolator;
 import android.widget.Toast;
 
 public class MainActivity extends BaseActivity implements OnMapClickListener {
@@ -98,6 +92,9 @@ public class MainActivity extends BaseActivity implements OnMapClickListener {
 		case R.id.menu_refresh:
 			syncService.pullFreshData();
 			break;
+		case R.id.menu_starred:
+			startActivity(new Intent(MainActivity.this, StationsListActivity.class));
+			break;
 		case R.id.menu_clear:
 			StationMarkerManager.clearMarkers();
 		default:break;
@@ -133,46 +130,8 @@ public class MainActivity extends BaseActivity implements OnMapClickListener {
 				.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_location))
 			);
 		}
-		animateMarker(locationMarker, position, false) ;
+		StationMarkerManager.animateMarker(mMap, locationMarker, position, false) ;
 	}
-	
-	//http://stackoverflow.com/questions/13728041/move-markers-in-google-map-v2-android
-	public void animateMarker(final Marker marker, final LatLng toPosition,
-            final boolean hideMarker) {
-        final Handler handler = new Handler();
-        final long start = SystemClock.uptimeMillis();
-        Projection proj = mMap.getProjection();
-        Point startPoint = proj.toScreenLocation(marker.getPosition());
-        final LatLng startLatLng = proj.fromScreenLocation(startPoint);
-        final long duration = 500;
-
-        final Interpolator interpolator = new LinearInterpolator();
-
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                long elapsed = SystemClock.uptimeMillis() - start;
-                float t = interpolator.getInterpolation((float) elapsed
-                        / duration);
-                double lng = t * toPosition.longitude + (1 - t)
-                        * startLatLng.longitude;
-                double lat = t * toPosition.latitude + (1 - t)
-                        * startLatLng.latitude;
-                marker.setPosition(new LatLng(lat, lng));
-
-                if (t < 1.0) {
-                    // Post again 16ms later.
-                    handler.postDelayed(this, 16);
-                } else {
-                    if (hideMarker) {
-                        marker.setVisible(false);
-                    } else {
-                        marker.setVisible(true);
-                    }
-                }
-            }
-        });
-    }
 
 	@Override
 	public void onStationsUpdated(List<Station> stations) {

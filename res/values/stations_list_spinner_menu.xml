@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array
+        name="action_stations_list">
+        <item>Par proximité</item>
+        <item>Favoris</item>
+        <item></item>
+    </string-array>
+</resources>

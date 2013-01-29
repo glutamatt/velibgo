@@ -7,7 +7,7 @@
     <string name="refresh">Actualiser</string>
     <string name="clear_map">Cacher les stations</string>
     <string name="display_markers">Afficher les stations</string>
-    <string name="hello_world">Hello world!</string>
     <string name="title_activity_stations_list">StationsListActivity</string>
+    <string name="favoris">Favoris</string>
 
 </resources>

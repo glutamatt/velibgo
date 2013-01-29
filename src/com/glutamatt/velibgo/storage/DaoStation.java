@@ -11,6 +11,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
+import android.util.Log;
 import android.util.SparseArray;
 
 
@@ -78,7 +79,7 @@ public class DaoStation extends AbstractDao implements IDaoDb<Station>{
 
 	@Override
 	public void save(Station model) {
-		stations.put(model.getId(), model);
+		Log.v("MAT", "SAVE " + model.getNom());
 		SQLiteDatabase db = getHelper().getWritableDatabase();
 		ContentValues values = new ContentValues();
 		values.put(KEY_ID, model.getId());
@@ -94,6 +95,7 @@ public class DaoStation extends AbstractDao implements IDaoDb<Station>{
 			db.insert(TABLE_NAME, null, values);
 		else
 			db.update(TABLE_NAME, values, KEY_ID + "=?", new String[]{String.valueOf(model.getId())});
+		stations.put(model.getId(), model);
 	}
 
 	@Override
@@ -173,7 +175,6 @@ public class DaoStation extends AbstractDao implements IDaoDb<Station>{
 		SQLiteDatabase db = getHelper().getReadableDatabase();
 		Cursor cursor = db.query(TABLE_NAME, fieldsString,
 				KEY_ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
-		
 		if(!cursor.moveToFirst())
 		{
 			cursor.close();

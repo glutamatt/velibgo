@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
@@ -16,7 +17,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class StationsListActivity extends Activity {
 
@@ -32,7 +32,9 @@ public class StationsListActivity extends Activity {
 			@Override
 			public void onItemClick(AdapterView<?> adaptorView, View view, int position, long id) {
 				Station station = (Station) adaptorView.getItemAtPosition(position);
-				Toast.makeText(getApplicationContext(), station.getNom() + " cliqué ... but now ?", Toast.LENGTH_SHORT).show();
+				Intent intent = new Intent(StationsListActivity.this, MainActivity.class);
+				intent.putExtra(MainActivity.EXTRA_FOCUS_STATION_ID, station.getId());
+				StationsListActivity.this.startActivity(intent);
 			}
 		});
 		loadStations();

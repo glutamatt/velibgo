@@ -44,6 +44,8 @@ import android.widget.Toast;
 public class MainActivity extends Activity implements ILocationServiceListener, ISyncServerListener, OnMapClickListener {
 	
 	public static final int SEARCH_SIGHT = 500;
+	protected static final String EXTRA_FOCUS_STATION_ID = "glutamatt.velibgo.Main.extra.focusstationid";
+	
 	GoogleMap mMap;
 	Marker locationMarker;
 	
@@ -106,6 +108,13 @@ public class MainActivity extends Activity implements ILocationServiceListener, 
 			@Override
 			protected void onPostExecute(List<Station> result) {
 				onStationsUpdated(result);
+				int focusId = getIntent().getIntExtra(EXTRA_FOCUS_STATION_ID, 0);
+				if(focusId > 0)
+				{
+					Station station = DaoStation.getInstance(getApplicationContext()).find(focusId);
+					if(station != null)
+						centerMap(new LatLng(station.getLatitude(), station.getLongitude()));
+				}
 			}
 		}
 		new LoadInit().execute();
@@ -151,12 +160,17 @@ public class MainActivity extends Activity implements ILocationServiceListener, 
 		return super.onOptionsItemSelected(item);
 	}
 	
+	
+	
 	private void centerMapOnLocation() {
 		if(locationMarker == null) {
 			Toast.makeText(getApplicationContext(), "Position non disponible", Toast.LENGTH_SHORT).show();
 			return ;
 		}
-		LatLng location = locationMarker.getPosition();
+		centerMap(locationMarker.getPosition());
+	}
+
+	private void centerMap(LatLng location) {
 		mMap.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder().target(new LatLng(
 				location.latitude, location.longitude
 				)).zoom(16).build()), 800, null);

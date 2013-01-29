@@ -88,10 +88,7 @@ public class SyncService extends Service{
 			protected Void doInBackground(Void... params) {
 				DaoStation dao = DaoStation.getInstance(getApplicationContext());
 				for(Station station : stations)
-				{
-					if(null == dao.find(station.getId()))
-							dao.save(station);
-				}
+					dao.save(station);
 				return null;
 			}
 		}
@@ -103,5 +100,4 @@ public class SyncService extends Service{
 		DatabaseOpenHelper.getInstance(getApplicationContext()).close();
 		super.onDestroy();
 	}
-
 }

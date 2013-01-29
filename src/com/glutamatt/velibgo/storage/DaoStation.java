@@ -163,12 +163,13 @@ public class DaoStation extends AbstractDao implements IDaoDb<Station>{
 
 	@Override
 	public void delete(Station model) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public Station find(int id) {
+		Station station = stations.get(id, null);
+		if(station != null)
+			return station;
 		SQLiteDatabase db = getHelper().getReadableDatabase();
 		Cursor cursor = db.query(TABLE_NAME, fieldsString,
 				KEY_ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
@@ -178,7 +179,7 @@ public class DaoStation extends AbstractDao implements IDaoDb<Station>{
 			cursor.close();
 			return null;
 		}
-		Station station = cursorToStation(cursor);
+		station = cursorToStation(cursor);
 		cursor.close();
 		return station;
 	}

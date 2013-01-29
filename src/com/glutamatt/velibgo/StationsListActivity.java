@@ -5,9 +5,9 @@ import java.util.List;
 import com.glutamatt.velibgo.models.Station;
 import com.glutamatt.velibgo.storage.DaoStation;
 
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.Menu;
@@ -18,7 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class StationsListActivity extends Activity {
+public class StationsListActivity extends BaseActivity {
 
 	protected static final String EXTRA_FIRST_STATION_ID = null;
 	private ListView list;
@@ -84,5 +84,23 @@ public class StationsListActivity extends Activity {
 			text2.setText(String.valueOf(station.getVelosDispo()) + " vélos dispo");
 			return row_view;
 		};
+	}
+
+	@Override
+	public void onLocationChanged(Location l) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onUpdateStart() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onStationsUpdated(List<Station> stations) {
+		// TODO Auto-generated method stub
+		
 	}
 }

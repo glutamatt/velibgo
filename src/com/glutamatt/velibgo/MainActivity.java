@@ -3,12 +3,6 @@ package com.glutamatt.velibgo;
 import java.util.List;
 
 import com.glutamatt.velibgo.models.Station;
-import com.glutamatt.velibgo.services.LocationService;
-import com.glutamatt.velibgo.services.SyncService;
-import com.glutamatt.velibgo.services.LocationService.ILocationServiceListener;
-import com.glutamatt.velibgo.services.LocationService.LocationBinder;
-import com.glutamatt.velibgo.services.SyncService.ISyncServerListener;
-import com.glutamatt.velibgo.services.SyncService.SyncBinder;
 import com.glutamatt.velibgo.storage.DaoStation;
 import com.glutamatt.velibgo.ui.CirclesOnMapDrawer;
 import com.glutamatt.velibgo.ui.StationMarkerManager;
@@ -28,12 +22,8 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.SystemClock;
-import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.graphics.Point;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -41,44 +31,13 @@ import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.Toast;
 
-public class MainActivity extends Activity implements ILocationServiceListener, ISyncServerListener, OnMapClickListener {
+public class MainActivity extends BaseActivity implements OnMapClickListener {
 	
 	public static final int SEARCH_SIGHT = 500;
 	protected static final String EXTRA_FOCUS_STATION_ID = "glutamatt.velibgo.Main.extra.focusstationid";
 	
 	GoogleMap mMap;
 	Marker locationMarker;
-	
-	boolean mLocationServiceBound = false;
-	LocationService mLocationService;
-	private ServiceConnection mLocationServiceConnection = new ServiceConnection() {
-		@Override
-		public void onServiceDisconnected(ComponentName name) {
-			mLocationServiceBound = false;
-		}
-		@Override
-		public void onServiceConnected(ComponentName name, IBinder service) {
-			LocationBinder binder = (LocationBinder) service;
-			mLocationService = binder.getService();
-			mLocationServiceBound = true ;
-			mLocationService.addListener(MainActivity.this);
-		}
-	};
-	
-	SyncService syncService;
-	boolean mSyncServiceBound = false;
-	private ServiceConnection mSyncServiceConnection = new ServiceConnection() {
-		@Override
-		public void onServiceDisconnected(ComponentName name) {
-			mSyncServiceBound = false;
-		}
-		@Override
-		public void onServiceConnected(ComponentName name, IBinder service) {
-			syncService = ((SyncBinder) service).getService();
-			mSyncServiceBound = true;
-			syncService.addListener(MainActivity.this);
-		}
-	};
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -118,23 +77,9 @@ public class MainActivity extends Activity implements ILocationServiceListener, 
 			}
 		}
 		new LoadInit().execute();
-		
-		Intent locationServiceIntent = new Intent(this, LocationService.class);
-		bindService(locationServiceIntent, mLocationServiceConnection, BIND_AUTO_CREATE);
-		
-		Intent syncServiceIntent = new Intent(this, SyncService.class);
-		bindService(syncServiceIntent, mSyncServiceConnection, BIND_AUTO_CREATE);
 		super.onResume();
 	}
 	
-	@Override
-	protected void onStop() {
-		super.onStop();
-		if(mLocationServiceBound) unbindService(mLocationServiceConnection);
-		mLocationServiceBound = false;
-	}
-	
-
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_main, menu);
@@ -262,21 +207,4 @@ public class MainActivity extends Activity implements ILocationServiceListener, 
 			CirclesOnMapDrawer.draw(mMap, pos, SEARCH_SIGHT, getResources());
 		new ShowNearByStationsTask().execute(pos);
 	}
-	
-	@Override
-	protected void onPause() {
-		if(mLocationServiceBound)
-		{
-			mLocationServiceBound = false;
-			unbindService(mLocationServiceConnection);
-		}
-		
-		if(mSyncServiceBound)
-		{
-			unbindService(mSyncServiceConnection);
-			mSyncServiceBound = false;
-		}
-		super.onPause();
-	}
-
 }

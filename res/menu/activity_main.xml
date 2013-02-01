@@ -12,6 +12,11 @@
         android:showAsAction="ifRoom|withText"
         />
     
+    <item android:id="@+id/menu_stations_list" android:titleCondensed=""
+        android:icon="@android:drawable/ic_menu_sort_by_size"
+        android:title="@string/liste_stations"
+        android:showAsAction="ifRoom|withText"
+        />
     <item android:id="@+id/menu_starred" android:titleCondensed=""
         android:icon="@drawable/menu_starred"
         android:title="@string/favoris"

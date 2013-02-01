@@ -44,8 +44,6 @@ public class MainActivity extends BaseActivity implements OnMapClickListener {
 			@Override
 			public void onInfoWindowClick(Marker clickedWindowMarker) {
 				Intent intent = new Intent(MainActivity.this, StationsListActivity.class);
-				intent.putExtra(StationsListActivity.EXTRA_FIRST_STATION_ID,
-						StationMarkerManager.getMarkerStationId(clickedWindowMarker));
 				startActivity(intent);
 			}
 		});
@@ -82,6 +80,7 @@ public class MainActivity extends BaseActivity implements OnMapClickListener {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		Intent intent;
 		switch (item.getItemId()) {
 		case R.id.menu_display_markers:
 			displayStationsByLocation(mMap.getCameraPosition().target, true);
@@ -93,6 +92,11 @@ public class MainActivity extends BaseActivity implements OnMapClickListener {
 			syncService.pullFreshData();
 			break;
 		case R.id.menu_starred:
+			intent = new Intent(MainActivity.this, StationsListActivity.class);
+			intent.putExtra(StationsListActivity.EXTRA_SHOW_STARED, true);
+			startActivity(intent);
+			break;
+		case R.id.menu_stations_list:
 			startActivity(new Intent(MainActivity.this, StationsListActivity.class));
 			break;
 		case R.id.menu_clear:

@@ -6,10 +6,13 @@
     <string name="locate_me">Me Localiser</string>
     <string name="refresh">Actualiser</string>
     <string name="clear_map">Cacher les stations</string>
+    <string name="liste_stations">Liste des stations</string>
     <string name="display_markers">Afficher les stations</string>
     <string name="title_activity_stations_list">StationsListActivity</string>
     <string name="favoris">Favoris</string>
     <string name="bearing">Orientation</string>
     <string name="button_favoris">Favoris</string>
+    <string name="libelle_velos">vélos : </string>
+    <string name="libelle_places">places : </string>
 
 </resources>

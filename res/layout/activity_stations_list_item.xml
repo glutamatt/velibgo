@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="5dp">
+    android:padding="1dp" >
 
     <TextView
         android:id="@+id/station_item_text1"
@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
+        android:paddingLeft="5dp"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <ImageView
@@ -31,21 +32,55 @@
         android:alpha="0.5"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
-    <TextView
-        android:id="@+id/station_item_text2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/station_item_text1"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
-
     <CheckBox
         android:id="@+id/checkbox_favoris"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="false"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/station_item_text3"
+        android:layout_alignTop="@+id/station_item_text2"
         android:button="@drawable/star"
+        android:focusable="false"
+        android:focusableInTouchMode="false" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/station_item_text1"
+        android:text="@string/libelle_velos"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <TextView
+        android:id="@+id/station_item_text2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/textView1"
+        android:layout_alignBottom="@+id/textView1"
+        android:layout_toRightOf="@+id/textView1"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        />
+
+    <TextView
+        android:id="@+id/TextView01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/station_item_text2"
+        android:layout_alignBottom="@+id/station_item_text2"
+        android:layout_marginLeft="36dp"
+        android:layout_toRightOf="@+id/station_item_text2"
+        android:text="@string/libelle_places"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <TextView
+        android:id="@+id/station_item_places"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/TextView01"
+        android:layout_alignBottom="@+id/TextView01"
+        android:layout_toRightOf="@+id/TextView01"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         />
 
 </RelativeLayout>

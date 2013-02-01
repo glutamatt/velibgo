@@ -14,6 +14,7 @@ import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,7 +31,7 @@ import android.widget.Toast;
 
 public class StationsListActivity extends BaseActivity {
 
-	protected static final String EXTRA_FIRST_STATION_ID = null;
+	public static final String EXTRA_SHOW_STARED = "com.glutamatt.velibgo.StationsListActivity.extra.showStared";
 	private ListView list;
 	private boolean showStared;
 	private static Location currentLocation;
@@ -40,6 +41,11 @@ public class StationsListActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_stations_list);
+		
+		Intent intent = getIntent();
+		if(intent != null)
+			showStared = intent.getBooleanExtra(EXTRA_SHOW_STARED, false);
+		
 		list = (ListView) findViewById(R.id.view_stations_list);
 		list.setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -61,11 +67,14 @@ public class StationsListActivity extends BaseActivity {
 		actionBar.setListNavigationCallbacks(mSpinnerAdapter, new OnNavigationListener() {
 			@Override
 			public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+				Log.v("MAT", "select list");
 				showStared = (itemPosition == 1)?true:false;
 				loadStations();
 				return false;
 			}
 		});
+		if(showStared)
+			actionBar.setSelectedNavigationItem(1);
 		
 		if(listAdapter != null)
 			list.setAdapter(listAdapter);
@@ -157,13 +166,15 @@ public class StationsListActivity extends BaseActivity {
 			View row_view = super.getView(position, convertView, parent);
 			TextView text2 = (TextView) row_view.findViewById(R.id.station_item_text2);
 			TextView text3 = (TextView) row_view.findViewById(R.id.station_item_text3);
+			TextView places = (TextView) row_view.findViewById(R.id.station_item_places);
 			ImageView orientation = (ImageView) row_view.findViewById(R.id.station_item_bearing_image);
 			CheckBox starCheckbox = (CheckBox) row_view.findViewById(R.id.checkbox_favoris);
 			final Station station = (Station) stations.get(position);
-			text2.setText(String.valueOf(station.getVelosDispo()) + " vélos dispo");
+			text2.setText(String.valueOf(station.getVelosDispo()));
+			places.setText(String.valueOf(station.getPlacesDispo()));
 			if (currentLocation != null) {
 				float[] dists = getDistances(station);
-				text3.setText(String.valueOf(java.lang.Math.round(dists[0])) + " m");
+				text3.setText(distanceToString(dists[0]));
 				orientation.setRotation(dists[1]);
 			}
 			starCheckbox.setFocusable(false);
@@ -177,6 +188,12 @@ public class StationsListActivity extends BaseActivity {
 				}
 			});
 			return row_view;
+		}
+
+		private CharSequence distanceToString(float distance) {
+			if(distance > 1000)
+				return String.valueOf((double)((int)(distance/100))/10) + " km";
+			return String.valueOf(java.lang.Math.round(distance)) + " m";
 		}
 	}
 

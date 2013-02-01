@@ -16,7 +16,7 @@ public class StationsProvider {
 		network = n ;
 	}
 	
-	public List<Station> getAllStations()
+	public synchronized List<Station> getAllStations()
 	{
 		if(loading) return null;
 		loading = true ;
@@ -26,5 +26,4 @@ public class StationsProvider {
 		loading = false ;
 		return stations;
 	}
-
 }

@@ -11,13 +11,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
-import android.util.Log;
 import android.util.SparseArray;
-
 
 public class DaoStation extends AbstractDao implements IDaoDb<Station>{
 	
-	public static final int DATABASE_VERSION = 3;
+	public static final int DATABASE_VERSION = 5;
 
 	private static final String TABLE_NAME = "station";
 	private static final String KEY_ID = "id";
@@ -25,6 +23,7 @@ public class DaoStation extends AbstractDao implements IDaoDb<Station>{
 	private static final String KEY_ADRESSE = "adresse";
 	private static final String KEY_LATITUDE = "latitude";
 	private static final String KEY_LONGITUDE = "longitude";
+	private static final String KEY_STARED    = "stared";
 	
 	private static final String KEY_VELOS_DISPO = "velos_dispo";
 	private static final String KEY_PLACES_DISPO = "places_dispo" ;
@@ -42,7 +41,8 @@ public class DaoStation extends AbstractDao implements IDaoDb<Station>{
 			KEY_VELOS_DISPO,
 			KEY_PLACES_DISPO,
 			KEY_PLACES_TOTAL,
-			KEY_PLACES_LOCKED 
+			KEY_PLACES_LOCKED,
+			KEY_STARED
 		};
 
 	private SparseArray<Station> stations = new SparseArray<Station>();
@@ -68,7 +68,8 @@ public class DaoStation extends AbstractDao implements IDaoDb<Station>{
 				KEY_VELOS_DISPO + " TEXT, " + 
 				KEY_PLACES_DISPO + " TEXT, " + 
 				KEY_PLACES_TOTAL + " TEXT, " + 
-				KEY_PLACES_LOCKED + " TEXT " + 
+				KEY_PLACES_LOCKED + " TEXT, " + 
+				KEY_STARED + " INTEGER" +
 				" )";
 	}
 
@@ -79,8 +80,6 @@ public class DaoStation extends AbstractDao implements IDaoDb<Station>{
 
 	@Override
 	public void save(Station model) {
-		Log.v("MAT", "SAVE " + model.getNom());
-		SQLiteDatabase db = getHelper().getWritableDatabase();
 		ContentValues values = new ContentValues();
 		values.put(KEY_ID, model.getId());
 		values.put(KEY_ADRESSE, model.getAdresse());
@@ -91,6 +90,9 @@ public class DaoStation extends AbstractDao implements IDaoDb<Station>{
 		values.put(KEY_PLACES_DISPO, model.getPlacesDispo());
 		values.put(KEY_PLACES_LOCKED, model.getPlacesLocked());
 		values.put(KEY_PLACES_TOTAL, model.getPlacesTotal());
+		values.put(KEY_STARED, model.isStared()?1:0);
+		
+		SQLiteDatabase db = getHelper().getWritableDatabase();
 		if(null == find(model.getId()))
 			db.insert(TABLE_NAME, null, values);
 		else
@@ -149,6 +151,7 @@ public class DaoStation extends AbstractDao implements IDaoDb<Station>{
 	}
 	
 	private Station cursorToStation(Cursor cursor) {
+		
 		Station station = new Station();
 		station.setId(cursor.getInt(0));
 		station.setNom(cursor.getString(1));
@@ -159,6 +162,7 @@ public class DaoStation extends AbstractDao implements IDaoDb<Station>{
 		station.setPlacesDispo(cursor.getInt(6));
 		station.setPlacesTotal(cursor.getInt(7));
 		station.setPlacesLocked(cursor.getInt(8));
+		station.setStared(cursor.getInt(9) == 1);
 		return station;
 	}
 
@@ -168,7 +172,7 @@ public class DaoStation extends AbstractDao implements IDaoDb<Station>{
 	}
 
 	@Override
-	public Station find(int id) {
+	public synchronized Station find(int id) {
 		Station station = stations.get(id, null);
 		if(station != null)
 			return station;
@@ -188,5 +192,13 @@ public class DaoStation extends AbstractDao implements IDaoDb<Station>{
 	@Override
 	public int getVersion() {
 		return DATABASE_VERSION;
+	}
+
+	public List<Station> getStared() {
+		List<Station> stared = new ArrayList<Station>();
+		for(Station station : getAll())
+			if(station.isStared())
+				stared.add(station);
+		return stared;
 	}
 }

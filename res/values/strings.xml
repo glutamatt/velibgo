@@ -9,5 +9,7 @@
     <string name="display_markers">Afficher les stations</string>
     <string name="title_activity_stations_list">StationsListActivity</string>
     <string name="favoris">Favoris</string>
+    <string name="bearing">Orientation</string>
+    <string name="button_favoris">Favoris</string>
 
 </resources>

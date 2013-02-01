@@ -4,6 +4,5 @@
         name="action_stations_list">
         <item>Par proximité</item>
         <item>Favoris</item>
-        <item></item>
     </string-array>
 </resources>

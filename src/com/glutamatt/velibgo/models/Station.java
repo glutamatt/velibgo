@@ -7,12 +7,20 @@ public class Station {
 		return getNom();
 	}
 	
+	public Station() {
+	}
+	
 	private int id;
 	private String adresse;
 	private String nom;
 	private double latitude;
 	private double longitude;
+	private boolean stared;
 	
+	public boolean isStared() {
+		return stared;
+	}
+
 	private int velosDispo;
 	private int placesDispo;
 	public int getPlacesDispo() {
@@ -74,5 +82,7 @@ public class Station {
 	public void setVelosDispo(int velosDispo) {
 		this.velosDispo = velosDispo;
 	}
-
+	public void setStared(boolean stared) {
+		this.stared = stared;
+	}
 }

@@ -51,7 +51,7 @@ public class SyncService extends Service{
 	}
 
 	private static boolean pulling;
-	public void pullFreshData() {
+	public synchronized void pullFreshData() {
 		if(pulling) return;
 		pulling = true ;
 		class Refresh extends AsyncTask<Void, Void, List<Station>>
@@ -62,8 +62,17 @@ public class SyncService extends Service{
 				if(network.checkNetwork())
 				{
 					StationsProvider provider = new StationsProvider(network);
-					List<Station> stations = provider.getAllStations();
-					return stations;
+					List<Station> stared = DaoStation.getInstance(getApplicationContext()).getStared();
+					List<Integer> staredIds = new ArrayList<Integer>();
+					List<Station> freshStations = provider.getAllStations();
+					if(null == freshStations)
+						return DaoStation.getInstance(getApplicationContext()).getAll();
+					for(Station star : stared)
+						staredIds.add(star.getId());
+					for(Station station : freshStations)
+						if(staredIds.contains(station.getId()))
+								station.setStared(true);
+					return freshStations;
 				}
 				return null;
 			}
@@ -85,7 +94,7 @@ public class SyncService extends Service{
 		new Refresh().execute();
 	}
 	
-	AsyncTask<Station, Void, Station> persistTask;
+	protected static AsyncTask<Station, Void, Station> persistTask;
 	private void persistStations(final List<Station> stations) {
 		class PersistStation extends AsyncTask<Station, Void, Station>
 		{

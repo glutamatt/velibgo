@@ -68,12 +68,12 @@ public abstract class BaseActivity extends Activity implements ILocationServiceL
 			mLocationServiceBound = false;
 			unbindService(mLocationServiceConnection);
 		}
-		
+		/*
 		if(mSyncServiceBound)
 		{
 			unbindService(mSyncServiceConnection);
 			mSyncServiceBound = false;
-		}
+		}*/
 		super.onPause();
 	}
 }
